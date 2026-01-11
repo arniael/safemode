@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SafeMode - Juste les mots, pas le bruit</title>
+    <script src="cordova.js"></script> 
+    <style>
+        :root {
+            --bg-color: #121212;
+            --text-color: #e0e0e0;
+            --chat-bg: #1e1e1e;
+            --user-color: #bb86fc;
+            --user-text: #000000;
+            --partner-color: #03dac6;
+            --partner-text: #000000;
+            --input-bg: #2c2c2c;
+            --border-radius: 12px;
+        }
+
+        [data-theme="light"] {
+            --bg-color: #f5f5f5;
+            --text-color: #121212;
+            --chat-bg: #ffffff;
+            --user-color: #6200ee;
+            --user-text: #ffffff;
+            --partner-color: #018786;
+            --partner-text: #ffffff;
+            --input-bg: #e0e0e0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* HEADER */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background-color: var(--chat-bg);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 10;
+        }
+
+        h1 { margin: 0; font-size: 1.2rem; font-weight: 700; }
+        
+        .icon-btn {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 5px;
+            margin-left: 5px;
+        }
+
+        /* CHAT AREA */
+        #chat-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 10px 15px;
+            border-radius: 18px;
+            font-size: 1rem;
+            line-height: 1.4;
+            animation: fadeIn 0.2s ease;
+            word-wrap: break-word;
+        }
+
+        .message.user {
+            align-self: flex-end;
+            background-color: var(--user-color);
+            color: var(--user-text);
+            border-bottom-right-radius: 4px;
+        }
+
+        .message.partner {
+            align-self: flex-start;
+            background-color: var(--partner-color);
+            color: var(--partner-text);
+            border-bottom-left-radius: 4px;
+        }
+
+        /* CONTROLS AREA */
+        #controls {
+            background-color: var(--chat-bg);
+            padding: 10px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        #mode-indicator {
+            text-align: center;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            padding: 8px;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 12px;
+            border-radius: 25px;
+            border: none;
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            font-size: 1rem;
+            outline: none;
+        }
+
+        #send-btn {
+            background-color: var(--user-color);
+            color: var(--user-text);
+            border: none;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: background-color 0.3s;
+        }
+
+        #switch-btn {
+            width: 100%;
+            margin-top: 10px;
+            padding: 12px;
+            border: 2px solid;
+            border-radius: 25px;
+            background: transparent;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        /* MODALS */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .modal-content {
+            background: var(--chat-bg);
+            padding: 25px;
+            border-radius: 15px;
+            width: 100%;
+            max-width: 400px;
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 10px; right: 15px;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* About & Tutorial Styles */
+        .about-section { margin-bottom: 25px; }
+        .about-title { font-size: 1rem; color: var(--user-color); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
+
+        .tutorial-step {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            background: var(--input-bg);
+            padding: 10px;
+            border-radius: 10px;
+        }
+        .step-icon { font-size: 1.5rem; margin-right: 15px; }
+        .step-text { flex: 1; font-size: 0.9rem; line-height: 1.4; }
+        .step-highlight { font-weight: bold; color: var(--user-color); }
+
+        .contact-box {
+            background: rgba(255,255,255,0.05);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .credits {
+            font-size: 0.75rem;
+            text-align: center;
+            margin-top: 25px;
+            opacity: 0.6;
+            font-style: italic;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 15px;
+        }
+
+        label { display: block; margin-top: 15px; margin-bottom: 5px; font-weight: bold; }
+        textarea, input[type="text"], select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #555;
+            background: var(--input-bg);
+            color: var(--text-color);
+            box-sizing: border-box;
+        }
+
+        button.primary {
+            background-color: var(--user-color);
+            color: var(--user-text);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            margin-top: 10px;
+            width: 100%;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        
+        button.secondary {
+            background-color: transparent;
+            border: 1px solid var(--text-color);
+            color: var(--text-color);
+            padding: 10px 20px;
+            border-radius: 8px;
+            margin-top: 10px;
+            width: 100%;
+            cursor: pointer;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <header>
+        <button class="icon-btn" onclick="openInfoPopup()">⚠️</button>
+        <h1>SafeMode</h1>
+        <div>
+            <button class="icon-btn" onclick="clearChat()">🗑️</button>
+            <button class="icon-btn" onclick="openAbout()">❓</button>
+            <button class="icon-btn" onclick="openConfig()">⚙️</button>
+        </div>
+    </header>
+
+    <div id="chat-container"></div>
+
+    <div id="controls">
+        <div id="mode-indicator">Initialisation...</div>
+        <div class="input-group">
+            <input type="text" id="message-input" placeholder="Écrire un message..." autocomplete="off">
+            <button id="send-btn" onclick="sendMessage()">➤</button>
+        </div>
+        <button id="switch-btn" onclick="toggleUser()">🔄 Passer le téléphone</button>
+    </div>
+
+    <div id="config-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeConfig()">&times;</span>
+            <h2>Configuration</h2>
+            <label>Prénom</label>
+            <input type="text" id="config-name">
+            <label>Thème</label>
+            <select id="config-theme">
+                <option value="dark">Sombre (Recommandé)</option>
+                <option value="light">Clair</option>
+            </select>
+            <label>Message de la Popup (Urgence)</label>
+            <textarea id="config-popup-msg" rows="5"></textarea>
+            <button class="primary" onclick="saveConfig()">Sauvegarder</button>
+            <button class="secondary" onclick="resetConfig()">Réinitialiser défaut</button>
+        </div>
+    </div>
+
+    <div id="info-modal" class="modal">
+        <div class="modal-content">
+            <h2 style="margin-top:0">⚠️ État actuel</h2>
+            <p id="info-content" style="white-space: pre-wrap; line-height: 1.5;"></p>
+            <button class="primary" onclick="closeInfoPopup()">Fermer</button>
+        </div>
+    </div>
+
+    <div id="about-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeAbout()">&times;</span>
+            <h2 style="margin-top:0">À Propos de SafeMode</h2>
+            
+            <div class="about-section">
+                <div class="about-title">Le but</div>
+                <p style="line-height: 1.5;">
+                    SafeMode est un terminal de secours pour les moments où la parole devient impossible (surcharge sensorielle, shutdown, mutisme).<br>
+                    Elle permet de couper le "son" pour se concentrer uniquement sur les mots, sans pression.<br>
+                    <strong>"Juste les mots, pas le bruit."</strong>
+                </p>
+                <p style="line-height: 1.5;">
+                    Le mode configuration permet de mettre ton prénom, passer en mode clair et personnaliser la petite popup à montrer
+                    à l'interlocuteur.
+                </p>
+            </div>
+
+            <div class="about-section">
+                <div class="about-title">Fonctionnement</div>
+                <div class="tutorial-step">
+                    <div class="step-icon">1️⃣</div>
+                    <div class="step-text">Montre le message d'explication à ton interlocuteur</div>
+                </div>
+                <div class="tutorial-step">
+                    <div class="step-icon">✍️</div>
+                    <div class="step-text">Écris. L'interface violette est pour toi !</div>
+                </div>
+                <div class="tutorial-step">
+                    <div class="step-icon">📱</div>
+                    <div class="step-text">Montre l'écran à ton interlocuteur</div>
+                </div>
+                <div class="tutorial-step">
+                    <div class="step-icon">🔄</div>
+                    <div class="step-text">Appuie sur "Passer le téléphone", l'interface devient turquoise et donne le lui.</div>
+                </div>
+                <div class="tutorial-step">
+                    <div class="step-icon">🗣️</div>
+                    <div class="step-text">Il répond, puis te rend l'appareil, repasse en mode violet et continue l'échange si besoin.</div>
+                </div>
+            </div>
+
+            <div class="about-section">
+                <div class="about-title">Contact / Avis</div>
+                <div class="contact-box">
+                    <p style="margin-top:0">Une suggestion ? Un bug ? Un mot doux ?</p>
+                    <button class="secondary" onclick="window.location.href='mailto:justeunedev@arniael.fr?subject=Avis SafeMode'">
+                        ✉️ Envoyer un email
+                    </button>
+                </div>
+            </div>
+
+            <button class="primary" onclick="closeAboutFirstRun()">J'ai compris, commencer</button>
+
+            <p class="credits">
+                Faite par une personne autiste, pour les personnes autistes, avec l'aide de Google Gemini.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // --- State Management ---
+        const defaultState = {
+            name: "Utilisateur.ice",
+            theme: "dark",
+            popupMsg: "Bonjour.\n\nJe suis une personne autiste et je traverse actuellement un moment de surcharge sensorielle (shutdown). Je ne peux plus parler, mais je peux écrire.\n\nMerci de patienter et d'utiliser cette application pour communiquer avec moi. C'est mon seul moyen d'interaction pour le moment."
+        };
+
+        let config = JSON.parse(localStorage.getItem('safeModeConfig')) || defaultState;
+        let isOwnerTurn = true; 
+        let isFirstRun = !localStorage.getItem('safeModeTutorialSeen');
+
+        // --- Initialization ---
+        function init() {
+            applyTheme(config.theme);
+            document.getElementById('chat-container').innerHTML = '';
+            addMessage(`Bonjour, je m'appelle ${config.name}. Merci de communiquer avec moi par cette application.`, 'user');
+            
+            updateUIForCurrentTurn();
+
+            if (isFirstRun) {
+                openAbout();
+            } else {
+                openInfoPopup();
+            }
+        }
+
+        // --- Core Logic ---
+        function sendMessage() {
+            const input = document.getElementById('message-input');
+            const text = input.value.trim();
+            if (!text) return;
+            addMessage(text, isOwnerTurn ? 'user' : 'partner');
+            input.value = '';
+            const container = document.getElementById('chat-container');
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function addMessage(text, type) {
+            const container = document.getElementById('chat-container');
+            const div = document.createElement('div');
+            div.className = `message ${type}`;
+            div.innerText = text;
+            container.appendChild(div);
+        }
+
+        function toggleUser() {
+            isOwnerTurn = !isOwnerTurn;
+            updateUIForCurrentTurn();
+        }
+
+        function updateUIForCurrentTurn() {
+            const indicator = document.getElementById('mode-indicator');
+            const switchBtn = document.getElementById('switch-btn');
+            const sendBtn = document.getElementById('send-btn');
+            const rootStyles = getComputedStyle(document.documentElement);
+
+            if (isOwnerTurn) {
+                indicator.innerText = `Écris ton message et montre-le à ton interlocuteur, ${config.name}.`;
+                indicator.style.backgroundColor = 'rgba(187, 134, 252, 0.1)';
+                indicator.style.color = rootStyles.getPropertyValue('--user-color');
+                switchBtn.innerText = "🔄 Passer le téléphone à l'interlocuteur";
+                switchBtn.style.borderColor = rootStyles.getPropertyValue('--user-color');
+                switchBtn.style.color = rootStyles.getPropertyValue('--user-color');
+                sendBtn.style.backgroundColor = rootStyles.getPropertyValue('--user-color');
+                sendBtn.style.color = rootStyles.getPropertyValue('--user-text');
+            } else {
+                indicator.innerText = `Retournez le téléphone à ${config.name} une fois votre message "envoyé".`;
+                indicator.style.backgroundColor = 'rgba(3, 218, 198, 0.1)';
+                indicator.style.color = rootStyles.getPropertyValue('--partner-color');
+                switchBtn.innerText = `🔄 Redonner le téléphone à ${config.name}`;
+                switchBtn.style.borderColor = rootStyles.getPropertyValue('--partner-color');
+                switchBtn.style.color = rootStyles.getPropertyValue('--partner-color');
+                sendBtn.style.backgroundColor = rootStyles.getPropertyValue('--partner-color');
+                sendBtn.style.color = rootStyles.getPropertyValue('--partner-text');
+            }
+        }
+
+        function clearChat() {
+            if(confirm("Voulez-vous effacer toute la conversation ?")) {
+                document.getElementById('chat-container').innerHTML = '';
+            }
+        }
+
+        // --- Modals ---
+        function openConfig() {
+            document.getElementById('config-name').value = config.name;
+            document.getElementById('config-theme').value = config.theme;
+            document.getElementById('config-popup-msg').value = config.popupMsg;
+            document.getElementById('config-modal').style.display = 'flex';
+        }
+
+        function saveConfig() {
+            config.name = document.getElementById('config-name').value;
+            config.theme = document.getElementById('config-theme').value;
+            config.popupMsg = document.getElementById('config-popup-msg').value;
+            localStorage.setItem('safeModeConfig', JSON.stringify(config));
+            applyTheme(config.theme);
+            closeConfig();
+            updateUIForCurrentTurn();
+        }
+
+        function resetConfig() {
+            if(confirm("Revenir aux paramètres par défaut ?")) {
+                config = defaultState;
+                localStorage.setItem('safeModeConfig', JSON.stringify(config));
+                openConfig();
+                applyTheme(config.theme);
+            }
+        }
+
+        function closeConfig() { document.getElementById('config-modal').style.display = 'none'; }
+
+        function openInfoPopup() {
+            document.getElementById('info-content').innerText = config.popupMsg;
+            document.getElementById('info-modal').style.display = 'flex';
+        }
+        function closeInfoPopup() { document.getElementById('info-modal').style.display = 'none'; }
+
+        // --- About / Tutorial Logic ---
+        function openAbout() {
+            document.getElementById('about-modal').style.display = 'flex';
+        }
+        
+        function closeAbout() {
+            document.getElementById('about-modal').style.display = 'none';
+        }
+
+        function closeAboutFirstRun() {
+            closeAbout();
+            localStorage.setItem('safeModeTutorialSeen', 'true');
+            isFirstRun = false;
+            // On first run, after closing help, show the Status popup
+            openInfoPopup();
+        }
+
+        function applyTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+        }
+
+        document.getElementById('message-input').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') sendMessage();
+        });
+
+        window.onload = init;
+    </script>
+</body>
+</html>
