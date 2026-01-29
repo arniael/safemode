@@ -1,4 +1,4 @@
-# 💜 SafeMode (v0.0.1)
+# 💜 SafeMode (v0.0.2)
 
 > **"Juste les mots, pas le bruit."**
 
@@ -24,6 +24,7 @@ Cette application est librement inspirée de "Emergency Chat" de Leonard Elezi, 
 * 🟢 **Quick Switch :** Basculez entre deux couleurs pour différencier vos messages de votre interlocteur.
 * ⚠️ **Popup de démarrage :** Une popup personnalisable vous permet d'expliquer rapidement ce qu'il vous arrive et pourquoi vous voulez utiliser cette application.
 * 🛡 **Zéro Data :** Aucune collecte de données. Tout reste en local sur votre téléphone.
+* 💾 **Sauvegarde :** Possibilité d'exporter la conversation au format PDF et de conserver la conversation au redémarrage de l'application.
 
 ---
 
@@ -31,9 +32,9 @@ Cette application est librement inspirée de "Emergency Chat" de Leonard Elezi, 
 
 L'application est actuellement en phase de **Bêta Ouverte**. 
 
-1. Téléchargez l'APK dans la section [Releases](https://github.com/arniael/safemode/releases/tag/beta).
+1. Téléchargez l'APK dans la section [Releases](https://github.com/arniael/safemode/releases/latest).
 2. Installez-le sur votre appareil Android.
-3. **Sécurité :** Vous pouvez consulter le rapport de scan VirusTotal ici : [https://www.virustotal.com/gui/file/7921178267ff26a083f0e91e2c6f8de985c7aade876fc155419c4c50e4c1644f](https://www.virustotal.com/gui/file/7921178267ff26a083f0e91e2c6f8de985c7aade876fc155419c4c50e4c1644f)
+3. **Sécurité :** Vous pouvez consulter le rapport de scan VirusTotal ici : [https://www.virustotal.com/gui/file/7921178267ff26a083f0e91e2c6f8de985c7aade876fc155419c4c50e4c1644f](https://www.virustotal.com/gui/file/ecdd0cb63f6da5d3786022b69c12a4147ae057d1d3cc6ecc6f9f6e7f7805b9ed?nocache=1))
 
 > [!IMPORTANT]  
 > SafeMode est un projet Open Source. Si vous trouvez des bugs (exceptions) ou si vous avez des idées d'optimisation (patchs), n'hésitez pas à ouvrir une "Issue" !
@@ -44,7 +45,7 @@ L'application est actuellement en phase de **Bêta Ouverte**.
 
 ## 👩‍💻 À propos de l'auteure
 
-Je m'appelle **Arniael**. Je suis une femme AuDHD passionnée par l'informatique et la technologie. J'ai développé cet outil pour répondre à mes propres besoins de sensoriel et pour aider la communauté neurodivergente à mieux gérer les moments de surcharge.
+Je m'appelle **Arniael** (Juste Une Dev). Je suis une femme AuDHD passionnée par l'informatique et la technologie. J'ai développé cet outil pour répondre à mes propres besoins de sensoriel et pour aider la communauté neurodivergente à mieux gérer les moments de surcharge.
 
 Aujourd'hui je principalement adminsitratrice système de mon propre environnement et j'utilise les outils à ma disposition pour améliorer mon environnement (et parfois celui des autres).
 
