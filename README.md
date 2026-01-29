@@ -1,4 +1,4 @@
-# 💜 SafeMode (v0.0.2)
+# 💜 SafeMode (v0.0.3)
 
 > **"Juste les mots, pas le bruit."**
 
