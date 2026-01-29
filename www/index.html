@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SafeMode - Juste les mots, pas le bruit</title>
+    <title>SafeMode</title>
     <script src="cordova.js"></script> 
     <style>
         :root {
@@ -50,17 +50,17 @@
             transition: background-color 0.3s, color 0.3s;
         }
 
-        /* HEADER COMPLEXE POUR CENTRAGE PARFAIT */
+        /* --- HEADER MODIFIÉ (Logo + Espace) --- */
         header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 15px;
+            padding: 10px 15px; /* Un peu plus compact */
             background-color: var(--chat-bg);
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
             z-index: 10;
             position: relative;
-            height: 40px;
+            height: 45px;
         }
 
         .header-left, .header-right {
@@ -70,17 +70,16 @@
             gap: 5px;
         }
 
-        h1 {
+        /* Le Logo Cœur Violet au centre */
+        .header-logo {
             position: absolute;
             left: 50%;
             top: 50%;
             transform: translate(-50%, -50%);
-            margin: 0;
-            font-size: 1.2rem;
-            font-weight: 700;
-            white-space: nowrap;
+            font-size: 1.8rem; /* Taille du cœur */
             z-index: 1;
             pointer-events: none;
+            cursor: default;
         }
         
         .icon-btn {
@@ -294,7 +293,6 @@
             padding: 5px 0;
         }
         
-        /* Switch CSS */
         .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--switch-off); transition: .4s; border-radius: 26px; }
@@ -320,17 +318,6 @@
         button.secondary { background-color: transparent; border: 1px solid var(--text-color); color: var(--text-color); padding: 10px 20px; border-radius: 8px; margin-top: 10px; width: 100%; cursor: pointer; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        @media print {
-            body { background-color: #ffffff; color: #000000; height: auto; overflow: visible; display: block; }
-            header, #controls, .modal, .icon-btn, #toast { display: none !important; }
-            #chat-container { overflow: visible; display: block; padding: 0; }
-            .message { border: 1px solid #ccc; background-color: #f0f0f0 !important; color: #000 !important; box-shadow: none; margin-bottom: 10px; page-break-inside: avoid; }
-            .message.user { background-color: #e6e6fa !important; text-align: right; margin-left: auto; }
-            .message.partner { background-color: #e0ffff !important; }
-            .msg-time { color: #666; }
-            #chat-container::before { content: "Historique SafeMode - " attr(data-date); display: block; font-size: 1.5rem; font-weight: bold; margin-bottom: 20px; text-align: center; width: 100%; }
-        }
     </style>
 </head>
 <body>
@@ -341,11 +328,11 @@
             <button class="icon-btn" onclick="openAbout()" title="Aide">❓</button>
         </div>
 
-        <h1>SafeMode</h1>
+        <div class="header-logo">💜</div>
 
         <div class="header-right">
             <button id="btn-save-history" class="icon-btn save-btn" onclick="toggleHistory()" title="Sauvegarder la conversation">💾</button>
-            <button class="icon-btn" onclick="exportPDF()" title="Exporter en PDF">📄</button>
+            <button class="icon-btn" onclick="shareHistory()" title="Partager / Exporter">📤</button>
             <button class="icon-btn" onclick="clearChat()" title="Effacer">🗑️</button>
             <button class="icon-btn" onclick="openConfig()" title="Paramètres">⚙️</button>
         </div>
@@ -454,8 +441,8 @@
                 </div>
                 
                 <div class="tutorial-step">
-                    <div class="step-icon">📄</div>
-                    <div class="step-text">Bouton PDF pour imprimer ou archiver l'échange.</div>
+                    <div class="step-icon">📤</div>
+                    <div class="step-text">Bouton <b>Partager</b> pour envoyer ou copier l'historique de conversation.</div>
                 </div>
             </div>
             
@@ -611,9 +598,31 @@
             }
         }
 
-        function exportPDF() {
-            if(confirm("Créer un PDF de la conversation ?")) {
-                window.print();
+        // --- FONCTION DE PARTAGE (Remplace l'export PDF défaillant) ---
+        function shareHistory() {
+            if (chatHistory.length === 0) {
+                showToast("Rien à partager !");
+                return;
+            }
+
+            let textToShare = `--- Historique SafeMode (${new Date().toLocaleDateString()}) ---\n\n`;
+            
+            chatHistory.forEach(msg => {
+                const author = msg.type === 'user' ? config.name : "Interlocuteur";
+                textToShare += `[${msg.time}] ${author} : ${msg.text}\n`;
+            });
+
+            // Utilisation de l'API native Android via le navigateur
+            if (navigator.share) {
+                navigator.share({
+                    title: 'SafeMode Export',
+                    text: textToShare
+                }).catch((error) => { console.log('Erreur de partage', error); });
+            } else {
+                // Fallback presse-papier si API non dispo
+                navigator.clipboard.writeText(textToShare).then(() => {
+                    showToast("Historique copié dans le presse-papier !");
+                });
             }
         }
 

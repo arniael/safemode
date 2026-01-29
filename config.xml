@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="fr.arniael.safemode" version="0.0.2" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="fr.arniael.safemode" version="0.0.3" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>SafeMode</name>
     <description>Juste les mots, pas le bruit.</description>
     <author email="justeunedev@arniael.fr" href="mailto:justeunedev@arniael.fr">Arniael</author>
@@ -8,15 +8,17 @@
     <allow-intent href="https://*/*" />
     <preference name="Orientation" value="portrait" />
     <preference name="DisallowOverscroll" value="true" />
-    <preference name="AndroidXEnabled" value="true" />
     
     <platform name="android">
         <icon src="www/img/icon.png" />
 
-        <preference name="AndroidWindowSplashScreenAnimatedIcon" value="www/img/icon-foreground.png" />
+        <preference name="AndroidWindowSplashScreenAnimatedIcon" value="www/img/icon.png" />
         <preference name="AndroidWindowSplashScreenBackground" value="#121212" />
         
         <preference name="SplashScreen" value="screen" />
         <preference name="SplashScreenDelay" value="1000" />
+
+        <preference name="AndroidXEnabled" value="true" />
+        <preference name="GradlePluginKotlinEnabled" value="true" />
     </platform>
 </widget>
