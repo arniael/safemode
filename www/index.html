@@ -16,6 +16,10 @@
             --partner-text: #000000;
             --input-bg: #2c2c2c;
             --border-radius: 12px;
+            --switch-off: #555;
+            --switch-on: #bb86fc;
+            --toast-bg: rgba(50, 50, 50, 0.9);
+            --danger-color: #cf6679;
         }
 
         [data-theme="light"] {
@@ -27,6 +31,10 @@
             --partner-color: #018786;
             --partner-text: #ffffff;
             --input-bg: #e0e0e0;
+            --switch-off: #ccc;
+            --switch-on: #6200ee;
+            --toast-bg: rgba(0, 0, 0, 0.8);
+            --danger-color: #b00020;
         }
 
         body {
@@ -42,18 +50,38 @@
             transition: background-color 0.3s, color 0.3s;
         }
 
-        /* HEADER */
+        /* HEADER COMPLEXE POUR CENTRAGE PARFAIT */
         header {
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            justify-content: space-between;
             padding: 15px;
             background-color: var(--chat-bg);
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
             z-index: 10;
+            position: relative;
+            height: 40px;
         }
 
-        h1 { margin: 0; font-size: 1.2rem; font-weight: 700; }
+        .header-left, .header-right {
+            display: flex;
+            align-items: center;
+            z-index: 2;
+            gap: 5px;
+        }
+
+        h1 {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            margin: 0;
+            font-size: 1.2rem;
+            font-weight: 700;
+            white-space: nowrap;
+            z-index: 1;
+            pointer-events: none;
+        }
         
         .icon-btn {
             background: none;
@@ -62,8 +90,43 @@
             font-size: 1.5rem;
             cursor: pointer;
             padding: 5px;
-            margin-left: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.8;
+            transition: transform 0.2s;
         }
+        
+        .icon-btn:active { transform: scale(0.9); }
+
+        /* STYLE BOUTON SAUVEGARDE (DISQUETTE) */
+        .save-btn {
+            position: relative;
+            opacity: 0.4;
+            filter: grayscale(100%);
+            transition: all 0.3s;
+        }
+
+        .save-btn::after {
+            content: '';
+            position: absolute;
+            width: 120%;
+            height: 2px;
+            background-color: var(--danger-color);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            opacity: 0.8;
+            pointer-events: none;
+        }
+
+        .save-btn.active {
+            opacity: 1;
+            filter: none;
+            color: var(--user-color);
+            transform: scale(1.1);
+        }
+        .save-btn.active::after { display: none; }
 
         /* CHAT AREA */
         #chat-container {
@@ -83,6 +146,7 @@
             line-height: 1.4;
             animation: fadeIn 0.2s ease;
             word-wrap: break-word;
+            position: relative;
         }
 
         .message.user {
@@ -97,6 +161,14 @@
             background-color: var(--partner-color);
             color: var(--partner-text);
             border-bottom-left-radius: 4px;
+        }
+
+        .msg-time {
+            font-size: 0.7rem;
+            opacity: 0.7;
+            margin-top: 5px;
+            display: block;
+            text-align: right;
         }
 
         /* CONTROLS AREA */
@@ -116,10 +188,7 @@
             transition: background-color 0.3s;
         }
 
-        .input-group {
-            display: flex;
-            gap: 10px;
-        }
+        .input-group { display: flex; gap: 10px; }
 
         input[type="text"] {
             flex: 1;
@@ -194,85 +263,91 @@
             cursor: pointer;
         }
 
-        /* About & Tutorial Styles */
-        .about-section { margin-bottom: 25px; }
-        .about-title { font-size: 1rem; color: var(--user-color); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
+        /* TOAST NOTIFICATION */
+        #toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: var(--toast-bg);
+            color: #fff;
+            text-align: center;
+            border-radius: 50px;
+            padding: 16px;
+            position: fixed;
+            z-index: 1000;
+            left: 50%;
+            bottom: 180px; 
+            transform: translateX(-50%);
+            font-size: 0.9rem;
+            opacity: 0;
+            transition: opacity 0.3s, bottom 0.3s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
 
-        .tutorial-step {
+        #toast.show { visibility: visible; opacity: 1; bottom: 200px; }
+
+        /* CONFIG & SLIDERS */
+        .setting-row {
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            margin-bottom: 12px;
-            background: var(--input-bg);
-            padding: 10px;
-            border-radius: 10px;
-        }
-        .step-icon { font-size: 1.5rem; margin-right: 15px; }
-        .step-text { flex: 1; font-size: 0.9rem; line-height: 1.4; }
-        .step-highlight { font-weight: bold; color: var(--user-color); }
-
-        .contact-box {
-            background: rgba(255,255,255,0.05);
-            padding: 15px;
-            border-radius: 10px;
-            text-align: center;
-        }
-
-        .credits {
-            font-size: 0.75rem;
-            text-align: center;
-            margin-top: 25px;
-            opacity: 0.6;
-            font-style: italic;
-            border-top: 1px solid rgba(255,255,255,0.1);
-            padding-top: 15px;
-        }
-
-        label { display: block; margin-top: 15px; margin-bottom: 5px; font-weight: bold; }
-        textarea, input[type="text"], select {
-            width: 100%;
-            padding: 10px;
-            border-radius: 8px;
-            border: 1px solid #555;
-            background: var(--input-bg);
-            color: var(--text-color);
-            box-sizing: border-box;
-        }
-
-        button.primary {
-            background-color: var(--user-color);
-            color: var(--user-text);
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            margin-top: 10px;
-            width: 100%;
-            font-size: 1rem;
-            cursor: pointer;
+            margin-top: 15px;
+            padding: 5px 0;
         }
         
-        button.secondary {
-            background-color: transparent;
-            border: 1px solid var(--text-color);
-            color: var(--text-color);
-            padding: 10px 20px;
-            border-radius: 8px;
-            margin-top: 10px;
-            width: 100%;
-            cursor: pointer;
-        }
+        /* Switch CSS */
+        .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--switch-off); transition: .4s; border-radius: 26px; }
+        .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--switch-on); }
+        input:checked + .slider:before { transform: translateX(24px); }
+
+        .sub-setting { margin-top: 10px; padding-left: 10px; border-left: 2px solid var(--input-bg); display: none; }
+        
+        /* UTIL Styles */
+        .about-section { margin-bottom: 25px; }
+        .about-title { font-size: 1rem; color: var(--user-color); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
+        .tutorial-step { display: flex; align-items: center; margin-bottom: 12px; background: var(--input-bg); padding: 10px; border-radius: 10px; }
+        .step-icon { font-size: 1.5rem; margin-right: 15px; width: 30px; text-align: center; }
+        .step-text { flex: 1; font-size: 0.9rem; line-height: 1.4; }
+        .contact-box { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; text-align: center; }
+        .credits { font-size: 0.75rem; text-align: center; margin-top: 25px; opacity: 0.6; font-style: italic; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; }
+        
+        label { display: block; margin-top: 15px; margin-bottom: 5px; font-weight: bold; }
+        textarea, input[type="text"], select { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #555; background: var(--input-bg); color: var(--text-color); box-sizing: border-box; }
+        
+        button.primary { background-color: var(--user-color); color: var(--user-text); border: none; padding: 10px 20px; border-radius: 8px; margin-top: 10px; width: 100%; font-size: 1rem; cursor: pointer; }
+        button.secondary { background-color: transparent; border: 1px solid var(--text-color); color: var(--text-color); padding: 10px 20px; border-radius: 8px; margin-top: 10px; width: 100%; cursor: pointer; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        @media print {
+            body { background-color: #ffffff; color: #000000; height: auto; overflow: visible; display: block; }
+            header, #controls, .modal, .icon-btn, #toast { display: none !important; }
+            #chat-container { overflow: visible; display: block; padding: 0; }
+            .message { border: 1px solid #ccc; background-color: #f0f0f0 !important; color: #000 !important; box-shadow: none; margin-bottom: 10px; page-break-inside: avoid; }
+            .message.user { background-color: #e6e6fa !important; text-align: right; margin-left: auto; }
+            .message.partner { background-color: #e0ffff !important; }
+            .msg-time { color: #666; }
+            #chat-container::before { content: "Historique SafeMode - " attr(data-date); display: block; font-size: 1.5rem; font-weight: bold; margin-bottom: 20px; text-align: center; width: 100%; }
+        }
     </style>
 </head>
 <body>
 
     <header>
-        <button class="icon-btn" onclick="openInfoPopup()">⚠️</button>
+        <div class="header-left">
+            <button class="icon-btn" onclick="openInfoPopup()" title="Alerte">⚠️</button>
+            <button class="icon-btn" onclick="openAbout()" title="Aide">❓</button>
+        </div>
+
         <h1>SafeMode</h1>
-        <div>
-            <button class="icon-btn" onclick="clearChat()">🗑️</button>
-            <button class="icon-btn" onclick="openAbout()">❓</button>
-            <button class="icon-btn" onclick="openConfig()">⚙️</button>
+
+        <div class="header-right">
+            <button id="btn-save-history" class="icon-btn save-btn" onclick="toggleHistory()" title="Sauvegarder la conversation">💾</button>
+            <button class="icon-btn" onclick="exportPDF()" title="Exporter en PDF">📄</button>
+            <button class="icon-btn" onclick="clearChat()" title="Effacer">🗑️</button>
+            <button class="icon-btn" onclick="openConfig()" title="Paramètres">⚙️</button>
         </div>
     </header>
 
@@ -287,19 +362,46 @@
         <button id="switch-btn" onclick="toggleUser()">🔄 Passer le téléphone</button>
     </div>
 
+    <div id="toast">Notification</div>
+
     <div id="config-modal" class="modal">
         <div class="modal-content">
             <span class="close-modal" onclick="closeConfig()">&times;</span>
             <h2>Configuration</h2>
+            
             <label>Prénom</label>
             <input type="text" id="config-name">
+            
             <label>Thème</label>
             <select id="config-theme">
                 <option value="dark">Sombre (Recommandé)</option>
                 <option value="light">Clair</option>
             </select>
+
+            <div class="setting-row">
+                <label style="margin:0">Message de début</label>
+                <label class="switch">
+                    <input type="checkbox" id="config-auto-msg-enabled" onchange="toggleAutoMsgUI()">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+
+            <div id="auto-msg-options" class="sub-setting">
+                <div class="setting-row" style="margin-top:0; margin-bottom:10px;">
+                    <label for="config-auto-msg-custom" style="margin:0; font-weight:normal; font-size:0.9rem;">Personnaliser le texte</label>
+                    <label class="switch">
+                        <input type="checkbox" id="config-auto-msg-custom" onchange="toggleAutoMsgUI()">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+
+                <textarea id="config-auto-msg-content" placeholder="Ex: Bonjour..." rows="3" style="display:none;"></textarea>
+                <p id="default-msg-preview" style="font-size:0.8rem; opacity:0.7; font-style:italic; margin-top:5px;"></p>
+            </div>
+
             <label>Message de la Popup (Urgence)</label>
             <textarea id="config-popup-msg" rows="5"></textarea>
+            
             <button class="primary" onclick="saveConfig()">Sauvegarder</button>
             <button class="secondary" onclick="resetConfig()">Réinitialiser défaut</button>
         </div>
@@ -316,26 +418,14 @@
     <div id="about-modal" class="modal">
         <div class="modal-content">
             <span class="close-modal" onclick="closeAbout()">&times;</span>
-            <h2 style="margin-top:0">À Propos de SafeMode</h2>
+            <h2 style="margin-top:0">À Propos</h2>
             
             <div class="about-section">
-                <div class="about-title">Le but</div>
-                <p style="line-height: 1.5;">
-                    SafeMode est un terminal de secours pour les moments où la parole devient impossible (surcharge sensorielle, shutdown, mutisme).<br>
-                    Elle permet de couper le "son" pour se concentrer uniquement sur les mots, sans pression.<br>
-                    <strong>"Juste les mots, pas le bruit."</strong>
-                </p>
-                <p style="line-height: 1.5;">
-                    Le mode configuration permet de mettre ton prénom, passer en mode clair et personnaliser la petite popup à montrer
-                    à l'interlocuteur.
-                </p>
-            </div>
-
-            <div class="about-section">
                 <div class="about-title">Fonctionnement</div>
+                
                 <div class="tutorial-step">
                     <div class="step-icon">1️⃣</div>
-                    <div class="step-text">Montre le message d'explication à ton interlocuteur</div>
+                    <div class="step-text">Montre le message d'explication à ton interlocuteur (Bouton ⚠️).</div>
                 </div>
                 <div class="tutorial-step">
                     <div class="step-icon">✍️</div>
@@ -343,33 +433,36 @@
                 </div>
                 <div class="tutorial-step">
                     <div class="step-icon">📱</div>
-                    <div class="step-text">Montre l'écran à ton interlocuteur</div>
+                    <div class="step-text">Montre l'écran à ton interlocuteur.</div>
                 </div>
                 <div class="tutorial-step">
                     <div class="step-icon">🔄</div>
-                    <div class="step-text">Appuie sur "Passer le téléphone", l'interface devient turquoise et donne le lui.</div>
+                    <div class="step-text">Appuie sur "Passer le téléphone", l'interface devient turquoise. Donne-lui l'appareil.</div>
                 </div>
                 <div class="tutorial-step">
                     <div class="step-icon">🗣️</div>
-                    <div class="step-text">Il répond, puis te rend l'appareil, repasse en mode violet et continue l'échange si besoin.</div>
+                    <div class="step-text">Il répond, puis te rend l'appareil. Repasse en mode violet.</div>
+                </div>
+
+                <div class="tutorial-step">
+                    <div class="step-icon">💾</div>
+                    <div class="step-text">
+                        <strong>Mode Sauvegarde :</strong><br>
+                        Icône barrée = Amnésique (s'efface en quittant).<br>
+                        Icône colorée = Mémoire (reste au redémarrage).
+                    </div>
+                </div>
+                
+                <div class="tutorial-step">
+                    <div class="step-icon">📄</div>
+                    <div class="step-text">Bouton PDF pour imprimer ou archiver l'échange.</div>
                 </div>
             </div>
-
-            <div class="about-section">
-                <div class="about-title">Contact / Avis</div>
-                <div class="contact-box">
-                    <p style="margin-top:0">Une suggestion ? Un bug ? Un mot doux ?</p>
-                    <button class="secondary" onclick="window.location.href='mailto:justeunedev@arniael.fr?subject=Avis SafeMode'">
-                        ✉️ Envoyer un email
-                    </button>
-                </div>
+            
+            <div class="contact-box">
+                <button class="secondary" onclick="window.location.href='mailto:justeunedev@arniael.fr?subject=Avis SafeMode'">✉️ Contact</button>
             </div>
-
-            <button class="primary" onclick="closeAboutFirstRun()">J'ai compris, commencer</button>
-
-            <p class="credits">
-                Faite par une personne autiste, pour les personnes autistes, avec l'aide de Google Gemini.
-            </p>
+            <button class="primary" onclick="closeAboutFirstRun()">Commencer</button>
         </div>
     </div>
 
@@ -378,25 +471,67 @@
         const defaultState = {
             name: "Utilisateur.ice",
             theme: "dark",
-            popupMsg: "Bonjour.\n\nJe suis une personne autiste et je traverse actuellement un moment de surcharge sensorielle (shutdown). Je ne peux plus parler, mais je peux écrire.\n\nMerci de patienter et d'utiliser cette application pour communiquer avec moi. C'est mon seul moyen d'interaction pour le moment."
+            popupMsg: "Bonjour.\n\nJe suis une personne autiste et je traverse actuellement un moment de surcharge sensorielle. Je ne peux plus parler, mais je peux écrire.",
+            autoMsgEnabled: true,
+            autoMsgIsCustom: false,
+            autoMsgContent: "",
+            saveHistory: false
         };
 
-        let config = JSON.parse(localStorage.getItem('safeModeConfig')) || defaultState;
+        let savedConfig = JSON.parse(localStorage.getItem('safeModeConfig')) || {};
+        let config = { ...defaultState, ...savedConfig };
+
         let isOwnerTurn = true; 
         let isFirstRun = !localStorage.getItem('safeModeTutorialSeen');
+        let chatHistory = [];
 
         // --- Initialization ---
         function init() {
             applyTheme(config.theme);
-            document.getElementById('chat-container').innerHTML = '';
-            addMessage(`Bonjour, je m'appelle ${config.name}. Merci de communiquer avec moi par cette application.`, 'user');
+            const today = new Date().toLocaleDateString();
+            document.getElementById('chat-container').setAttribute('data-date', today);
+
+            updateHistoryIcon();
+
+            const container = document.getElementById('chat-container');
+            container.innerHTML = '';
+            
+            if (config.saveHistory) {
+                const savedHistory = JSON.parse(localStorage.getItem('safeModeHistory') || '[]');
+                if (savedHistory.length > 0) {
+                    chatHistory = savedHistory;
+                    savedHistory.forEach(msg => {
+                        renderMessageToDOM(msg.text, msg.type, msg.time);
+                    });
+                    container.scrollTop = container.scrollHeight;
+                } else {
+                    triggerWelcomeMessage();
+                }
+            } else {
+                localStorage.removeItem('safeModeHistory');
+                triggerWelcomeMessage();
+            }
             
             updateUIForCurrentTurn();
 
             if (isFirstRun) {
-                openAbout();
+                document.getElementById('about-modal').style.display = 'flex';
             } else {
-                openInfoPopup();
+                if(!config.saveHistory || chatHistory.length === 0) {
+                    openInfoPopup();
+                }
+            }
+        }
+
+        function triggerWelcomeMessage() {
+            if (config.autoMsgEnabled) {
+                let welcomeText = "";
+                if (config.autoMsgIsCustom && config.autoMsgContent) {
+                    welcomeText = config.autoMsgContent;
+                } else {
+                    welcomeText = `Bonjour, je m'appelle ${config.name}. Merci de communiquer avec moi par cette application.`;
+                }
+                if(welcomeText) addMessage(welcomeText, 'user');
             }
         }
 
@@ -412,11 +547,74 @@
         }
 
         function addMessage(text, type) {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            renderMessageToDOM(text, type, timeString);
+            chatHistory.push({ text: text, type: type, time: timeString });
+            if (config.saveHistory) {
+                localStorage.setItem('safeModeHistory', JSON.stringify(chatHistory));
+            }
+        }
+
+        function renderMessageToDOM(text, type, timeString) {
             const container = document.getElementById('chat-container');
             const div = document.createElement('div');
             div.className = `message ${type}`;
-            div.innerText = text;
+            const textNode = document.createTextNode(text);
+            div.appendChild(textNode);
+            const timeSpan = document.createElement('span');
+            timeSpan.className = 'msg-time';
+            timeSpan.innerText = timeString;
+            div.appendChild(timeSpan);
             container.appendChild(div);
+        }
+
+        // --- History Logic ---
+        function toggleHistory() {
+            config.saveHistory = !config.saveHistory;
+            saveConfigToStorage();
+            updateHistoryIcon();
+
+            if (config.saveHistory) {
+                localStorage.setItem('safeModeHistory', JSON.stringify(chatHistory));
+                showToast("Sauvegarde activée : Conversation conservée.");
+            } else {
+                localStorage.removeItem('safeModeHistory');
+                showToast("Sauvegarde désactivée : Effacement au redémarrage.");
+            }
+        }
+
+        function updateHistoryIcon() {
+            const btn = document.getElementById('btn-save-history');
+            if (config.saveHistory) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById("toast");
+            toast.innerText = message;
+            toast.className = "show";
+            setTimeout(function(){ toast.className = toast.className.replace("show", ""); }, 3000);
+        }
+
+        function clearChat() {
+            if(confirm("Voulez-vous effacer toute la conversation ?")) {
+                document.getElementById('chat-container').innerHTML = '';
+                chatHistory = [];
+                if (config.saveHistory) {
+                    localStorage.removeItem('safeModeHistory');
+                }
+                triggerWelcomeMessage();
+            }
+        }
+
+        function exportPDF() {
+            if(confirm("Créer un PDF de la conversation ?")) {
+                window.print();
+            }
         }
 
         function toggleUser() {
@@ -431,7 +629,7 @@
             const rootStyles = getComputedStyle(document.documentElement);
 
             if (isOwnerTurn) {
-                indicator.innerText = `Écris ton message et montre-le à ton interlocuteur, ${config.name}.`;
+                indicator.innerText = `Écris ton message, ${config.name}.`;
                 indicator.style.backgroundColor = 'rgba(187, 134, 252, 0.1)';
                 indicator.style.color = rootStyles.getPropertyValue('--user-color');
                 switchBtn.innerText = "🔄 Passer le téléphone à l'interlocuteur";
@@ -440,7 +638,7 @@
                 sendBtn.style.backgroundColor = rootStyles.getPropertyValue('--user-color');
                 sendBtn.style.color = rootStyles.getPropertyValue('--user-text');
             } else {
-                indicator.innerText = `Retournez le téléphone à ${config.name} une fois votre message "envoyé".`;
+                indicator.innerText = `Interlocuteur : Réponds et rends le téléphone.`;
                 indicator.style.backgroundColor = 'rgba(3, 218, 198, 0.1)';
                 indicator.style.color = rootStyles.getPropertyValue('--partner-color');
                 switchBtn.innerText = `🔄 Redonner le téléphone à ${config.name}`;
@@ -451,71 +649,93 @@
             }
         }
 
-        function clearChat() {
-            if(confirm("Voulez-vous effacer toute la conversation ?")) {
-                document.getElementById('chat-container').innerHTML = '';
-            }
-        }
-
-        // --- Modals ---
+        // --- Modals & Settings ---
         function openConfig() {
             document.getElementById('config-name').value = config.name;
             document.getElementById('config-theme').value = config.theme;
             document.getElementById('config-popup-msg').value = config.popupMsg;
+            document.getElementById('config-auto-msg-enabled').checked = config.autoMsgEnabled;
+            document.getElementById('config-auto-msg-custom').checked = config.autoMsgIsCustom;
+            document.getElementById('config-auto-msg-content').value = config.autoMsgContent;
+            toggleAutoMsgUI();
             document.getElementById('config-modal').style.display = 'flex';
+        }
+
+        function toggleAutoMsgUI() {
+            const isEnabled = document.getElementById('config-auto-msg-enabled').checked;
+            const isCustom = document.getElementById('config-auto-msg-custom').checked;
+            const subSettings = document.getElementById('auto-msg-options');
+            const textArea = document.getElementById('config-auto-msg-content');
+            const preview = document.getElementById('default-msg-preview');
+            const currentName = document.getElementById('config-name').value || "Utilisateur";
+
+            if (isEnabled) {
+                subSettings.style.display = 'block';
+                if (isCustom) {
+                    textArea.style.display = 'block';
+                    preview.style.display = 'none';
+                } else {
+                    textArea.style.display = 'none';
+                    preview.style.display = 'block';
+                    preview.innerText = `Aperçu : "Bonjour, je m'appelle ${currentName}..."`;
+                }
+            } else {
+                subSettings.style.display = 'none';
+            }
         }
 
         function saveConfig() {
             config.name = document.getElementById('config-name').value;
             config.theme = document.getElementById('config-theme').value;
             config.popupMsg = document.getElementById('config-popup-msg').value;
-            localStorage.setItem('safeModeConfig', JSON.stringify(config));
+            config.autoMsgEnabled = document.getElementById('config-auto-msg-enabled').checked;
+            config.autoMsgIsCustom = document.getElementById('config-auto-msg-custom').checked;
+            config.autoMsgContent = document.getElementById('config-auto-msg-content').value;
+
+            saveConfigToStorage();
             applyTheme(config.theme);
             closeConfig();
             updateUIForCurrentTurn();
+            showToast("Paramètres sauvegardés");
         }
+
+        function saveConfigToStorage() { localStorage.setItem('safeModeConfig', JSON.stringify(config)); }
 
         function resetConfig() {
             if(confirm("Revenir aux paramètres par défaut ?")) {
                 config = defaultState;
-                localStorage.setItem('safeModeConfig', JSON.stringify(config));
+                saveConfigToStorage();
                 openConfig();
                 applyTheme(config.theme);
             }
         }
 
         function closeConfig() { document.getElementById('config-modal').style.display = 'none'; }
-
+        
         function openInfoPopup() {
             document.getElementById('info-content').innerText = config.popupMsg;
             document.getElementById('info-modal').style.display = 'flex';
         }
         function closeInfoPopup() { document.getElementById('info-modal').style.display = 'none'; }
-
-        // --- About / Tutorial Logic ---
-        function openAbout() {
-            document.getElementById('about-modal').style.display = 'flex';
-        }
         
-        function closeAbout() {
-            document.getElementById('about-modal').style.display = 'none';
-        }
-
+        function openAbout() { document.getElementById('about-modal').style.display = 'flex'; }
+        function closeAbout() { document.getElementById('about-modal').style.display = 'none'; }
+        
         function closeAboutFirstRun() {
             closeAbout();
             localStorage.setItem('safeModeTutorialSeen', 'true');
             isFirstRun = false;
-            // On first run, after closing help, show the Status popup
-            openInfoPopup();
+            if(!config.saveHistory || chatHistory.length === 0) {
+                openInfoPopup();
+            }
         }
 
-        function applyTheme(theme) {
-            document.documentElement.setAttribute('data-theme', theme);
-        }
+        function applyTheme(theme) { document.documentElement.setAttribute('data-theme', theme); }
 
         document.getElementById('message-input').addEventListener('keypress', function (e) {
             if (e.key === 'Enter') sendMessage();
         });
+        document.getElementById('config-name').addEventListener('input', toggleAutoMsgUI);
 
         window.onload = init;
     </script>
